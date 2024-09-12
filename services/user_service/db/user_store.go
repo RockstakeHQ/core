@@ -1,7 +1,7 @@
 package db
 
 import (
-	"betcube_engine/types"
+	"betcube-engine/types"
 	"context"
 
 	"github.com/uptrace/bun"

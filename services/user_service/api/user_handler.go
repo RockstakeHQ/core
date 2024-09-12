@@ -1,10 +1,10 @@
 package api
 
 import (
-	"betcube_engine/types"
+	"betcube-engine/types"
 
-	datastore "betcube_engine/datastore"
-	errors "betcube_engine/errors"
+	datastore "betcube-engine/datastore"
+	errors "betcube-engine/errors"
 
 	"github.com/gofiber/fiber/v2"
 )

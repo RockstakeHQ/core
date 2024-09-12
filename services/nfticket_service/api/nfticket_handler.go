@@ -1,14 +1,14 @@
 package api
 
 import (
-	"betcube_engine/types"
+	"betcube-engine/types"
 	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 
-	datastore "betcube_engine/datastore"
-	errors "betcube_engine/errors"
+	datastore "betcube-engine/datastore"
+	errors "betcube-engine/errors"
 )
 
 type NfticketHandler struct {

@@ -1,12 +1,12 @@
 package main
 
 import (
-	"betcube_engine/config"
-	"betcube_engine/services/sportsbook_service/api"
-	"betcube_engine/services/sportsbook_service/db"
+	"betcube-engine/config"
+	"betcube-engine/services/sportsbook_service/api"
+	"betcube-engine/services/sportsbook_service/db"
 	"os"
 
-	datastore "betcube_engine/datastore"
+	datastore "betcube-engine/datastore"
 
 	"github.com/gofiber/fiber/v2"
 )

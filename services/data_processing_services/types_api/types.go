@@ -1,7 +1,7 @@
 package types_api
 
 import (
-	"betcube_engine/types"
+	"betcube-engine/types"
 	"encoding/json"
 	"fmt"
 )

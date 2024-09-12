@@ -1,11 +1,11 @@
 package main
 
 import (
-	"betcube_engine/config"
-	"betcube_engine/services/nfticket_service/api"
-	"betcube_engine/services/nfticket_service/db"
+	"betcube-engine/config"
+	"betcube-engine/services/nfticket_service/api"
+	"betcube-engine/services/nfticket_service/db"
 
-	datastore "betcube_engine/datastore"
+	datastore "betcube-engine/datastore"
 
 	"github.com/gofiber/fiber/v2"
 )

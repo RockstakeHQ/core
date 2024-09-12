@@ -1,8 +1,8 @@
 package main
 
 import (
-	"betcube_engine/services/data_processing_services/types_api"
-	"betcube_engine/types"
+	"betcube-engine/services/data_processing_services/types_api"
+	"betcube-engine/types"
 	"context"
 	"encoding/json"
 	"fmt"

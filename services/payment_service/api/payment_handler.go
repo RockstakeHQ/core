@@ -1,7 +1,7 @@
 package api
 
 import (
-	datastore "betcube_engine/datastore"
+	datastore "betcube-engine/datastore"
 
 	"github.com/gofiber/fiber/v2"
 )

@@ -1,7 +1,7 @@
 package db
 
 import (
-	"betcube_engine/types"
+	"betcube-engine/types"
 	"context"
 	"fmt"
 	"os"
@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 
-	utils "betcube_engine/utils"
+	utils "betcube-engine/utils"
 )
 
 type SportsbookStore interface {

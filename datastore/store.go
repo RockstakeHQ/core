@@ -1,11 +1,11 @@
 package datastore
 
 import (
-	nfticketdb "betcube_engine/services/nfticket_service/db"
-	stripedb "betcube_engine/services/payment_service/db"
-	recorddb "betcube_engine/services/record_service/db"
-	sportsbookdb "betcube_engine/services/sportsbook_service/db"
-	userdb "betcube_engine/services/user_service/db"
+	nfticketdb "betcube-engine/services/nfticket_service/db"
+	stripedb "betcube-engine/services/payment_service/db"
+	recorddb "betcube-engine/services/record_service/db"
+	sportsbookdb "betcube-engine/services/sportsbook_service/db"
+	userdb "betcube-engine/services/user_service/db"
 )
 
 type MongoStore struct {
