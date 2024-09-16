@@ -51,7 +51,7 @@ func main() {
 	}
 	oddsEndpoint := "https://v3.football.api-sports.io/odds"
 	fixturesEndpoint := "https://v3.football.api-sports.io/fixtures"
-	date := "2024-09-16"
+	date := "2024-09-20"
 	bookmaker := 8
 
 	headers := map[string]string{
