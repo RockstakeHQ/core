@@ -54,10 +54,10 @@ func main() {
 	date := "2024-09-16"
 	bookmaker := 8
 
-	// headers := map[string]string{
-	// 	"x-rapidapi-host": "v3.football.api-sports.io",
-	// 	"x-rapidapi-key":  "33db0d9d9531386613988c43458700a6",
-	// }
+	headers := map[string]string{
+		"x-rapidapi-host": "v3.football.api-sports.io",
+		"x-rapidapi-key":  "33db0d9d9531386613988c43458700a6",
+	}
 
 	fixturesParams := map[string]string{
 		"date": date,
