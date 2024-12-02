@@ -1,4 +1,4 @@
-module betcube-engine
+module rockstake-core
 
 go 1.22.2
 

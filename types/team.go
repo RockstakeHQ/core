@@ -1,13 +1,13 @@
 package types
 
 type Team struct {
-	ID     int    `bson:"_id" json:"id"`
-	Name   string `bson:"name" json:"name"`
-	Logo   string `bson:"logo" json:"logo"`
-	Winner bool   `bson:"winner" json:"winner"`
+	ID     int    `bun:"id" json:"id"`
+	Name   string `bun:"name" json:"name"`
+	Logo   string `bun:"logo" json:"logo"`
+	Winner bool   `bun:"winner" json:"winner"`
 }
 
 type Teams struct {
-	Home Team `bson:"home" json:"home"`
-	Away Team `bson:"away" json:"away"`
+	Home Team `bun:"home" json:"home"`
+	Away Team `bun:"away" json:"away"`
 }
