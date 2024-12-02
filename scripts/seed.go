@@ -38,17 +38,39 @@ func NewStore(db *bun.DB) *Store {
 }
 
 func (s *Store) InsertLeague(ctx context.Context, league *types.League) error {
-	_, err := s.db.NewInsert().Model(league).Exec(ctx)
+	_, err := s.db.NewInsert().
+		Model(league).
+		On("CONFLICT (id) DO UPDATE").
+		Set("name = EXCLUDED.name").
+		Set("country = EXCLUDED.country").
+		Set("logo = EXCLUDED.logo").
+		Set("flag = EXCLUDED.flag").
+		Exec(ctx)
 	return err
 }
 
 func (s *Store) InsertTeam(ctx context.Context, team *types.Team) error {
-	_, err := s.db.NewInsert().Model(team).Exec(ctx)
+	_, err := s.db.NewInsert().
+		Model(team).
+		On("CONFLICT (id) DO UPDATE").
+		Set("name = EXCLUDED.name").
+		Set("logo = EXCLUDED.logo").
+		Set("winner = EXCLUDED.winner").
+		Exec(ctx)
 	return err
 }
 
 func (s *Store) InsertFixture(ctx context.Context, fixture *types.Fixture) error {
-	_, err := s.db.NewInsert().Model(fixture).Exec(ctx)
+	_, err := s.db.NewInsert().
+		Model(fixture).
+		On("CONFLICT (id) DO UPDATE").
+		Set("date = EXCLUDED.date").
+		Set("league = EXCLUDED.league").
+		Set("teams = EXCLUDED.teams").
+		Set("status = EXCLUDED.status").
+		Set("score = EXCLUDED.score").
+		Set("goals = EXCLUDED.goals").
+		Exec(ctx)
 	return err
 }
 
@@ -105,7 +127,6 @@ func main() {
 			Name:    fixture.League.Name,
 			Country: fixture.League.Country,
 			Logo:    fixture.League.Logo,
-			Flag:    fixture.League.Flag,
 		}
 		if err := store.InsertLeague(ctx, league); err != nil {
 			log.Printf("Error inserting league: %v", err)
