@@ -13,7 +13,6 @@ type FixtureStore interface {
 	GetFixturesByDateRange(ctx context.Context, startDate, endDate string) ([]types.Fixture, error)
 }
 
-// Implementarea pentru PocketBase
 type PocketBaseFixtureStore struct {
 	app *pocketbase.PocketBase
 }
@@ -30,8 +29,8 @@ func (s *PocketBaseFixtureStore) GetFixturesByDateRange(ctx context.Context, sta
 
 	query := `
         SELECT 
-            id,           -- adăugat id-ul din PocketBase
-            fixture_id,   -- id-ul din API
+            id,           
+            fixture_id, 
             date,
             venue_name,
             venue_city,

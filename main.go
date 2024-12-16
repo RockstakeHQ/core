@@ -13,20 +13,23 @@ import (
 func main() {
 	app := pocketbase.New()
 
-	// Inițializăm store-ul și handler-ul
 	fixtureStore := db.NewPocketBaseFixtureStore(app)
 	fixtureHandler := api.NewFixtureHandler(fixtureStore)
 
-	// Setăm rutele
+	betStore := db.NewPocketBaseBetStore(app)
+	betHandler := api.NewBetHandler(betStore)
+
 	app.OnServe().BindFunc(func(e *core.ServeEvent) error {
-		// Adăugăm ruta pentru fixtures
 		e.Router.GET("/api/fixtures", func(e *core.RequestEvent) error {
 			return fixtureHandler.HandleGetFixturesByDate(e)
+		})
+
+		e.Router.POST("/api/bet", func(e *core.RequestEvent) error {
+			return betHandler.HandlePostBet(e)
 		})
 		return e.Next()
 	})
 
-	// Dacă nu sunt argumente, pornim direct serverul
 	if len(os.Args) == 1 {
 		log.Println("Starting server on http://localhost:8090")
 		if err := app.Start(); err != nil {
@@ -35,7 +38,6 @@ func main() {
 		return
 	}
 
-	// Altfel, lăsăm PocketBase să gestioneze comenzile
 	if err := app.Start(); err != nil {
 		log.Fatal(err)
 	}
