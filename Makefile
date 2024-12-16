@@ -2,5 +2,7 @@ build:
 	@go build -o bin/api
 run:
 	@./bin/api
-seed:
-	@go run scripts/seed.go
+mvx:
+	@go run ./main.go
+fixtures:
+	@go run scripts/fixtures.go serve
