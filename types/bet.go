@@ -4,6 +4,9 @@ import "time"
 
 type Bet struct {
 	ID            string    `json:"id"`
+	NftIdentifier string    `json:"nft_identifier"`
+	Collection    string    `json:"collection"`
+	Nonce         int       `json:"nonce"`
 	WalletAddress string    `json:"wallet_address"`
 	FixtureID     int       `json:"fixture_id"`
 	MarketID      int       `json:"market_id"`

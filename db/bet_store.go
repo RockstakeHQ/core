@@ -32,12 +32,18 @@ func (s *PocketBaseBetStore) InsertBet(ctx context.Context, bet types.Bet) (type
 
 	query := `
         INSERT INTO bets (
+			nft_identifier,
+			collection,
+			nonce
             wallet_address,
             fixture_id,
             market_id,
             status,
             bet_info
         ) VALUES (
+		    {:nft_identifier},
+			{:collection},
+			{:nonce},
             {:wallet_address},
             {:fixture_id},
             {:market_id},
@@ -47,6 +53,9 @@ func (s *PocketBaseBetStore) InsertBet(ctx context.Context, bet types.Bet) (type
     `
 
 	params := map[string]interface{}{
+		"nft_identifier": bet.NftIdentifier,
+		"collection":     bet.Collection,
+		"nonce":          bet.Nonce,
 		"wallet_address": bet.WalletAddress,
 		"fixture_id":     bet.FixtureID,
 		"market_id":      bet.MarketID,
