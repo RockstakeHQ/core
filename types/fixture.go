@@ -1,19 +1,16 @@
 package types
 
-import "time"
-
 type Fixture struct {
-	ID     int       `bun:"id" json:"id"`
-	Date   time.Time `bun:"date" json:"date"`
-	League League    `bun:"league" json:"league"`
-	Teams  Teams     `bun:"teams" json:"teams"`
-	Status Status    `bun:"status" json:"status"`
-	Score  Score     `bun:"score" json:"score"`
-	Goals  Goals     `bun:"goals" json:"goals"`
-}
-
-type Status struct {
-	Long    string `bun:"long" json:"long"`
-	Short   string `bun:"short" json:"short"`
-	Elapsed int    `bun:"elapsed" json:"elapsed"`
+	ID            string `json:"id"`
+	FixtureID     int    `json:"fixture_id"`
+	Date          string `json:"date"`
+	VenueName     string `json:"venue_name"`
+	VenueCity     string `json:"venue_city"`
+	LeagueName    string `json:"league_name"`
+	LeagueCountry string `json:"league_country"`
+	HomeTeam      string `json:"home_team"`
+	AwayTeam      string `json:"away_team"`
+	Status        string `json:"status"`
+	HomeGoals     int    `json:"home_goals"`
+	AwayGoals     int    `json:"away_goals"`
 }
