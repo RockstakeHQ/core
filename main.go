@@ -13,8 +13,9 @@ import (
 func main() {
 	app := pocketbase.New()
 
-	pinataKey := os.Getenv("PINATA_API_KEY")
-	pinataSecret := os.Getenv("PINATA_API_SECRET")
+	filebaseAccessKey := os.Getenv("FILEBASE_ACCESS_KEY")
+	filebaseSecretKey := os.Getenv("FILEBASE_SECRET_KEY")
+	filebaseBucketName := os.Getenv("FILEBASE_BUCKET")
 
 	fixtureStore := db.NewPocketBaseFixtureStore(app)
 	fixtureHandler := api.NewFixtureHandler(fixtureStore)
@@ -22,7 +23,7 @@ func main() {
 	betStore := db.NewPocketBaseBetStore(app)
 	betHandler := api.NewBetHandler(betStore)
 
-	nftStore := db.NewPinataNFTStore(pinataKey, pinataSecret)
+	nftStore := db.NewFilebaseStore(filebaseAccessKey, filebaseSecretKey, filebaseBucketName)
 	nftHandler := api.NewNFTHandler(nftStore)
 
 	app.OnServe().BindFunc(func(e *core.ServeEvent) error {

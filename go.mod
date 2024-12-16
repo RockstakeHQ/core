@@ -8,6 +8,7 @@ require (
 	github.com/AlecAivazis/survey/v2 v2.3.7 // indirect
 	github.com/andybalholm/brotli v1.1.1 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
+	github.com/aws/aws-sdk-go v1.55.5 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.32.6 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.7 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.28.6 // indirect
@@ -27,7 +28,11 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.28.6 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.33.2 // indirect
 	github.com/aws/smithy-go v1.22.1 // indirect
+	github.com/benbjohnson/clock v1.3.5 // indirect
+	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/btcsuite/btcd/btcutil v1.1.3 // indirect
+	github.com/crackcomm/go-gitignore v0.0.0-20170627025303-887ab5e44cc3 // indirect
+	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.2.0 // indirect
 	github.com/denisbrodbeck/machineid v1.0.1 // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/domodwyer/mailyak/v3 v3.6.2 // indirect
@@ -47,15 +52,33 @@ require (
 	github.com/hashicorp/golang-lru v0.6.0 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/ipfs/boxo v0.12.0 // indirect
+	github.com/ipfs/go-cid v0.4.1 // indirect
+	github.com/ipfs/go-ipfs-api v0.7.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/klauspost/compress v1.17.11 // indirect
+	github.com/klauspost/cpuid/v2 v2.2.7 // indirect
 	github.com/labstack/echo/v4 v4.13.2 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect
+	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
+	github.com/libp2p/go-flow-metrics v0.1.0 // indirect
+	github.com/libp2p/go-libp2p v0.28.2 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
+	github.com/minio/sha256-simd v1.0.1 // indirect
+	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
+	github.com/multiformats/go-base32 v0.1.0 // indirect
+	github.com/multiformats/go-base36 v0.2.0 // indirect
+	github.com/multiformats/go-multiaddr v0.9.0 // indirect
+	github.com/multiformats/go-multibase v0.2.0 // indirect
+	github.com/multiformats/go-multicodec v0.9.0 // indirect
+	github.com/multiformats/go-multihash v0.2.3 // indirect
+	github.com/multiformats/go-multistream v0.4.1 // indirect
+	github.com/multiformats/go-varint v0.0.7 // indirect
 	github.com/multiversx/concurrent-map v0.1.4 // indirect
 	github.com/multiversx/mx-chain-communication-go v1.1.1 // indirect
 	github.com/multiversx/mx-chain-crypto-go v1.2.12 // indirect
@@ -71,6 +94,7 @@ require (
 	github.com/puzpuzpuz/xsync/v3 v3.4.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/shirou/gopsutil v3.21.11+incompatible // indirect
+	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/spf13/cast v1.7.0 // indirect
 	github.com/spf13/cobra v1.8.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
@@ -101,6 +125,7 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241209162323-e6fa225c2576 // indirect
 	google.golang.org/grpc v1.68.1 // indirect
 	google.golang.org/protobuf v1.35.2 // indirect
+	lukechampine.com/blake3 v1.2.1 // indirect
 	mellium.im/sasl v0.3.1 // indirect
 	modernc.org/gc/v3 v3.0.0-20241004144649-1aea3fae8852 // indirect
 	modernc.org/libc v1.61.4 // indirect

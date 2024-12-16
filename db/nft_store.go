@@ -6,82 +6,74 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"mime/multipart"
-	"net/http"
 	"os"
 	"rockstake-core/types"
 	"time"
+
+	shell "github.com/ipfs/go-ipfs-api"
 )
 
 type NFTStore interface {
 	GenerateAndUploadNFT(ctx context.Context, betData types.NftNodeInfo) (string, error)
 }
 
-type PinataNFTStore struct {
-	pinataKey    string
-	pinataSecret string
+type FilebaseStore struct {
+	accessKey  string
+	secretKey  string
+	bucketName string
 }
 
-func NewPinataNFTStore(pinataKey, pinataSecret string) *PinataNFTStore {
-	return &PinataNFTStore{
-		pinataKey:    pinataKey,
-		pinataSecret: pinataSecret,
+func NewFilebaseStore(accessKey, secretKey, bucketName string) *FilebaseStore {
+	return &FilebaseStore{
+		accessKey:  accessKey,
+		secretKey:  secretKey,
+		bucketName: bucketName,
 	}
 }
 
-func uploadToPinata(filename string, pinataAPIKey string, pinataAPISecret string) (string, error) {
+func uploadToIPFS(filename string) (string, error) {
+	// Conectăm clientul IPFS la nodul local
+	sh := shell.NewShell("localhost:5001")
+
+	// Citim conținutul fișierului
 	file, err := os.Open(filename)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("error opening file: %v", err)
 	}
 	defer file.Close()
 
-	fileContent, err := ioutil.ReadAll(file)
+	fileData, err := ioutil.ReadAll(file)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("error reading file: %v", err)
 	}
 
-	var requestBody bytes.Buffer
-	writer := multipart.NewWriter(&requestBody)
-	part, err := writer.CreateFormFile("file", filename)
+	// Adăugăm fișierul la IPFS
+	cid, err := sh.Add(bytes.NewReader(fileData))
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("error uploading to IPFS: %v", err)
 	}
-	part.Write(fileContent)
-	writer.Close()
 
-	req, err := http.NewRequest("POST", "https://api.pinata.cloud/pinning/pinFileToIPFS", &requestBody)
+	// Asigurăm propagarea globală a CID-ului
+	err = sh.Pin(cid) // Pinăm CID-ul local pentru a ne asigura că rămâne disponibil
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("error pinning CID: %v", err)
 	}
-	req.Header.Set("pinata_api_key", pinataAPIKey)
-	req.Header.Set("pinata_secret_api_key", pinataAPISecret)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	// Publicăm CID-ul în rețea (DHT - Distributed Hash Table)
+	err = sh.Pin(cid)
 	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("failed to upload file to Pinata: %s", resp.Status)
+		return "", fmt.Errorf("error providing CID to network: %v", err)
 	}
 
-	var result map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&result)
-	cid, ok := result["IpfsHash"].(string)
-	if !ok {
-		return "", fmt.Errorf("failed to get CID from Pinata response")
-	}
+	// Construim URL-ul
+	ipfsURL := fmt.Sprintf("https://ipfs.io/ipfs/%s", cid)
 
-	return cid, nil
+	return ipfsURL, nil
 }
 
-func (s *PinataNFTStore) GenerateAndUploadNFT(ctx context.Context, betData types.NftNodeInfo) (string, error) {
+func (s *FilebaseStore) GenerateAndUploadNFT(ctx context.Context, betData types.NftNodeInfo) (string, error) {
 	metadata := types.NFTMetadata{
-		Description: "Bet Exchange",
+		Description: "RS-Exchange",
 		Compiler:    "Rockstake",
 		Attributes: []types.Attribute{
 			{TraitType: "Fixture", Value: betData.FixtureID},
@@ -106,7 +98,7 @@ func (s *PinataNFTStore) GenerateAndUploadNFT(ctx context.Context, betData types
 	}
 	defer os.Remove(tempFile)
 
-	cid, err := uploadToPinata(tempFile, s.pinataKey, s.pinataSecret)
+	cid, err := uploadToIPFS(tempFile)
 	if err != nil {
 		return "", fmt.Errorf("error uploading to IPFS: %v", err)
 	}
