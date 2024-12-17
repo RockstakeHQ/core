@@ -12,6 +12,7 @@ import (
 
 type BetStore interface {
 	InsertBet(ctx context.Context, bet types.Bet) (types.Bet, error)
+	GetBet(ctx context.Context, nft_identifier string) (types.Bet, error)
 }
 
 type PocketBaseBetStore struct {
@@ -73,6 +74,27 @@ func (s *PocketBaseBetStore) InsertBet(ctx context.Context, bet types.Bet) (type
 
 	log.Printf("Inserted bet: Wallet=%s, Fixture=%d, Market=%d, Status=%s",
 		bet.WalletAddress, bet.FixtureID, bet.MarketID, bet.Status)
+
+	return bet, nil
+}
+
+func (s *PocketBaseBetStore) GetBet(ctx context.Context, nft_identifier string) (types.Bet, error) {
+	query := `
+        SELECT *   
+        FROM bets 
+        WHERE id = {:nft_identifier}
+    `
+
+	var bet types.Bet
+	err := s.app.DB().NewQuery(query).
+		Bind(map[string]interface{}{
+			"nft_identifier": nft_identifier,
+		}).
+		One(&bet)
+
+	if err != nil {
+		return types.Bet{}, fmt.Errorf("error fetching bet: %w", err)
+	}
 
 	return bet, nil
 }

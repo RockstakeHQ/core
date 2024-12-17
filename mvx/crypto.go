@@ -1,17 +1,15 @@
-package main
+package mvx
 
 import (
 	"context"
 	"fmt"
 	"math/big"
+	"os"
 	"time"
 
 	"github.com/multiversx/mx-chain-core-go/data/transaction"
-	"github.com/multiversx/mx-chain-crypto-go/signing"
-	"github.com/multiversx/mx-chain-crypto-go/signing/ed25519"
 
 	"github.com/multiversx/mx-sdk-go/blockchain"
-	"github.com/multiversx/mx-sdk-go/blockchain/cryptoProvider"
 	"github.com/multiversx/mx-sdk-go/builders"
 	"github.com/multiversx/mx-sdk-go/core"
 	"github.com/multiversx/mx-sdk-go/data"
@@ -19,13 +17,10 @@ import (
 	"github.com/multiversx/mx-sdk-go/interactors"
 )
 
-var (
-	suite  = ed25519.NewEd25519()
-	keyGen = signing.NewKeyGenerator(suite)
-)
-
-const SMART_CONTRACT = "erd1qqqqqqqqqqqqqpgqlaa66qc2uapx5ef79a4csqu2cgqpr0ty6dkqpl73p8"
-const MY_ADDRESS = "erd1z5cpd8vapfvescq576ptw2u9vhft574ggeglq5jx29kc4uk0zhdquvnac3"
+// var (
+// 	suite  = ed25519.NewEd25519()
+// 	keyGen = signing.NewKeyGenerator(suite)
+// )
 
 func burnTokens(
 	ctx context.Context,
@@ -45,6 +40,9 @@ func burnTokens(
 		EntityType:          core.Proxy,
 	}
 
+	smartContract := os.Getenv("SMART_CONTRACT")
+	myAddress := os.Getenv("MY_ADDRESS")
+
 	ep, err := blockchain.NewProxy(args)
 	if err != nil {
 		return fmt.Errorf("error creating proxy: %w", err)
@@ -55,7 +53,7 @@ func burnTokens(
 		return fmt.Errorf("unable to get network configs: %w", err)
 	}
 
-	addr, err := data.NewAddressFromBech32String(MY_ADDRESS)
+	addr, err := data.NewAddressFromBech32String(myAddress)
 	if err != nil {
 		return fmt.Errorf("error creating address: %w", err)
 	}
@@ -80,8 +78,8 @@ func burnTokens(
 	tx := &transaction.FrontendTransaction{
 		Nonce:    account.Nonce,
 		Value:    "0",
-		Receiver: SMART_CONTRACT,
-		Sender:   MY_ADDRESS,
+		Receiver: smartContract,
+		Sender:   myAddress,
 		GasPrice: netConfigs.MinGasPrice,
 		GasLimit: 5000000,
 		Data:     data,
@@ -106,29 +104,29 @@ func burnTokens(
 	return nil
 }
 
-func main() {
-	ctx := context.Background()
+// func main() {
+// 	ctx := context.Background()
 
-	w := interactors.NewWallet()
+// 	w := interactors.NewWallet()
 
-	privateKey, err := w.LoadPrivateKeyFromPemFile("/Users/andrewkhirita/Desktop/rockstake/core/wallets/wallet_shard2_2.pem")
-	if err != nil {
-		panic(err)
-	}
+// 	privateKey, err := w.LoadPrivateKeyFromPemFile("/Users/andrewkhirita/Desktop/rockstake/core/wallets/wallet_shard2_2.pem")
+// 	if err != nil {
+// 		panic(err)
+// 	}
 
-	holder, _ := cryptoProvider.NewCryptoComponentsHolder(keyGen, privateKey)
-	txBuilder, err := builders.NewTxBuilder(cryptoProvider.NewSigner())
-	if err != nil {
-		panic(err)
-	}
+// 	holder, _ := cryptoProvider.NewCryptoComponentsHolder(keyGen, privateKey)
+// 	txBuilder, err := builders.NewTxBuilder(cryptoProvider.NewSigner())
+// 	if err != nil {
+// 		panic(err)
+// 	}
 
-	tokenId := "SNOW-d7a8f5"
-	// Cu aceasta
-	amount := new(big.Int)
-	amount.SetString("5000000000000000", 10) // Folosim string pentru numere mari
+// 	tokenId := "SNOW-d7a8f5"
+// 	// Cu aceasta
+// 	amount := new(big.Int)
+// 	amount.SetString("5000000000000000", 10) // Folosim string pentru numere mari
 
-	err = burnTokens(ctx, txBuilder, holder, tokenId, amount)
-	if err != nil {
-		panic(err)
-	}
-}
+// 	err = burnTokens(ctx, txBuilder, holder, tokenId, amount)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// }
