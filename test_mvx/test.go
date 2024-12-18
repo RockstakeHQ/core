@@ -51,12 +51,12 @@ func encodeString(s string) []byte {
 func createMarketArguments() ([][]byte, error) {
 	var combined []byte
 
-	eventId := 8080
+	eventId := 9000
 	eventIdHex := intToHex(eventId)
 
 	description := stringToHex("FullTime Result")
 
-	closeTimestamp := time.Now().Unix() + (10 * 60)
+	closeTimestamp := time.Now().Unix() + (2 * 60)
 	closeTimestampHex := intToHex(int(closeTimestamp))
 
 	descriptionSelection1 := intToHex(1)
@@ -99,8 +99,6 @@ func createMarket(
 	ctx context.Context,
 	txBuilder interactors.TxBuilder,
 	holder core.CryptoComponentsHolder,
-	eventId int,
-	description string,
 ) error {
 
 	smartContract := "erd1qqqqqqqqqqqqqpgqe7xe3hjzk9wt9qlz479l6pl9f69k0nuthcpsvq8r20"
@@ -181,6 +179,96 @@ func createMarket(
 	return nil
 }
 
+// SetMarketResult
+func setMarketResult(ctx context.Context,
+	txBuilder interactors.TxBuilder,
+	holder core.CryptoComponentsHolder, eventId int, marketId int, scoreHome int, scoreAway int) error {
+
+	smartContract := "erd1qqqqqqqqqqqqqpgqe7xe3hjzk9wt9qlz479l6pl9f69k0nuthcpsvq8r20"
+	myAddress := "erd17qanf53xkluxdtvp42sjv49mwfs2emepsx047fgjvlzsjc2shcpsag4d43"
+
+	args := blockchain.ArgsProxy{
+		ProxyURL:            examples.DevnetGateway,
+		Client:              nil,
+		SameScState:         false,
+		ShouldBeSynced:      false,
+		FinalityCheck:       false,
+		CacheExpirationTime: time.Minute,
+		EntityType:          core.Proxy,
+	}
+
+	ep, err := blockchain.NewProxy(args)
+	if err != nil {
+		return fmt.Errorf("error creating proxy: %w", err)
+	}
+
+	netConfigs, err := ep.GetNetworkConfig(ctx)
+	if err != nil {
+		return fmt.Errorf("unable to get network configs: %w", err)
+	}
+
+	addr, err := data.NewAddressFromBech32String(myAddress)
+	if err != nil {
+		return fmt.Errorf("error creating address: %w", err)
+	}
+
+	account, err := ep.GetAccount(ctx, addr)
+	if err != nil {
+		return fmt.Errorf("error getting account: %w", err)
+	}
+
+	eventIdHex := intToHex(eventId)
+	marketIdHex := intToHex(marketId)
+	scoreHomeHex := intToHex(scoreHome)
+	scoreAwayHex := intToHex(scoreAway)
+
+	argsMarket := [][]byte{
+		hexToBytes(eventIdHex),
+		hexToBytes(marketIdHex),
+		hexToBytes(scoreHomeHex),
+		hexToBytes(scoreAwayHex),
+	}
+
+	txDataBuilder := builders.NewTxDataBuilder()
+	data, err := txDataBuilder.
+		Function("setMarketResult").
+		ArgBytesList(argsMarket).
+		ToDataBytes()
+	if err != nil {
+		return fmt.Errorf("error building transaction data: %w", err)
+	}
+
+	// Construim tranzacția
+	tx := &transaction.FrontendTransaction{
+		Nonce:    account.Nonce,
+		Value:    "0",
+		Receiver: smartContract,
+		Sender:   myAddress,
+		GasPrice: netConfigs.MinGasPrice,
+		GasLimit: 30000000,
+		Data:     data,
+		ChainID:  "D",
+		Version:  1,
+		Options:  0,
+	}
+
+	// Aplicăm semnătura folosind txBuilder
+	err = txBuilder.ApplyUserSignature(holder, tx)
+	if err != nil {
+		return fmt.Errorf("error signing transaction: %w", err)
+	}
+
+	// Trimitem tranzacția
+	txHash, err := ep.SendTransaction(ctx, tx)
+	if err != nil {
+		return fmt.Errorf("error sending transaction: %w", err)
+	}
+
+	fmt.Printf("Transaction sent successfully. Hash: %s\n", txHash)
+	return nil
+
+}
+
 // Test Bet Creation
 func createBetArguments() ([][]byte, error) {
 	var combined []byte
@@ -228,6 +316,7 @@ func createBetArguments() ([][]byte, error) {
 		closeTimestampBytes,
 	}, nil
 }
+
 func createESDTTransferWithSCCall(
 	ctx context.Context,
 	txBuilder interactors.TxBuilder,
@@ -381,7 +470,7 @@ func placeBetWithESDT(
 	cidHex := hex.EncodeToString([]byte(cid))
 
 	// Convert market ID to hex (15)
-	marketId := 5
+	marketId := 8
 	marketIdHex := intToHex(marketId)
 
 	// Convert selection ID to hex (1)
@@ -399,11 +488,11 @@ func placeBetWithESDT(
 	if betType == Back {
 		liability = big.NewInt(0)
 	} else {
-		// Pentru Lay, calculăm liability
 		liability = big.NewInt(10)
+		liability.SetString("10000000000000000000", 10) // 15 tokens cu 18 zecimale
 	}
 
-	liabilityHex := bigIntegerToHex(liability)
+	liabilityHex := fmt.Sprintf("%016x", liability)
 	betTypeBytes := encodeEnum(betType)
 
 	// Prepare arguments
@@ -413,7 +502,7 @@ func placeBetWithESDT(
 		hexToBytes(selectionIdHex),
 		hexToBytes(oddsHex),
 		betTypeBytes,
-		hexToBytes(liabilityHex), // Folosim liability în loc de amount pentru ultimul argument
+		hexToBytes(liabilityHex),
 	}
 
 	return createESDTTransferWithSCCall(
@@ -451,44 +540,69 @@ func hexToBytes(hexStr string) []byte {
 // 		panic(err)
 // 	}
 
-// 	eventId := 8000
-// 	description := "FullTime Result"
-// 	err = createMarket(ctx, txBuilder, holder, eventId, description)
+// 	err = createMarket(ctx, txBuilder, holder)
 // 	if err != nil {
 // 		panic(err)
 // 	}
 // }
 
 // Main for Creating Bet
+// func main() {
+// 	ctx := context.Background()
+
+// 	// Initialize wallet
+// 	w := interactors.NewWallet()
+// 	privateKey, err := w.LoadPrivateKeyFromPemFile("/Users/andrewkhirita/Desktop/rockstake/core/converted_wallet.pem")
+// 	if err != nil {
+// 		panic(fmt.Errorf("failed to load private key: %w", err))
+// 	}
+
+// 	// Setup crypto components
+// 	suite := ed25519.NewEd25519()
+// 	keyGen := signing.NewKeyGenerator(suite)
+
+// 	holder, _ := cryptoProvider.NewCryptoComponentsHolder(keyGen, privateKey)
+
+// 	// Create transaction builder
+// 	txBuilder, err := builders.NewTxBuilder(cryptoProvider.NewSigner())
+// 	if err != nil {
+// 		panic(fmt.Errorf("failed to create transaction builder: %w", err))
+// 	}
+
+// 	// Call the function
+// 	err = placeBetWithESDT(
+// 		ctx,
+// 		txBuilder,
+// 		holder,
+// 	)
+// 	if err != nil {
+// 		panic(fmt.Errorf("failed to place bet: %w", err))
+// 	}
+// }
+
+// Set Market Result
 func main() {
 	ctx := context.Background()
 
-	// Initialize wallet
 	w := interactors.NewWallet()
+
 	privateKey, err := w.LoadPrivateKeyFromPemFile("/Users/andrewkhirita/Desktop/rockstake/core/converted_wallet.pem")
 	if err != nil {
-		panic(fmt.Errorf("failed to load private key: %w", err))
+		panic(err)
 	}
-
-	// Setup crypto components
-	suite := ed25519.NewEd25519()
-	keyGen := signing.NewKeyGenerator(suite)
 
 	holder, _ := cryptoProvider.NewCryptoComponentsHolder(keyGen, privateKey)
-
-	// Create transaction builder
 	txBuilder, err := builders.NewTxBuilder(cryptoProvider.NewSigner())
 	if err != nil {
-		panic(fmt.Errorf("failed to create transaction builder: %w", err))
+		panic(err)
 	}
 
-	// Call the function
-	err = placeBetWithESDT(
-		ctx,
-		txBuilder,
-		holder,
-	)
+	eventId := 9000
+	marketId := 8
+	scoreHome := 3
+	scoreAway := 0
+	err = setMarketResult(ctx, txBuilder, holder, eventId, marketId, scoreHome, scoreAway)
 	if err != nil {
-		panic(fmt.Errorf("failed to place bet: %w", err))
+		panic(err)
 	}
 }

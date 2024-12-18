@@ -24,7 +24,6 @@ func NewPocketBaseFixtureStore(app *pocketbase.PocketBase) *PocketBaseFixtureSto
 }
 
 func (s *PocketBaseFixtureStore) GetFixturesByDateRange(ctx context.Context, startDate, endDate string) ([]types.Fixture, error) {
-	// Adăugăm logging pentru debugging
 	log.Printf("Searching fixtures between %s and %s", startDate, endDate)
 
 	query := `
@@ -57,7 +56,6 @@ func (s *PocketBaseFixtureStore) GetFixturesByDateRange(ctx context.Context, sta
 		return nil, fmt.Errorf("error fetching fixtures: %v", err)
 	}
 
-	// Logging pentru fiecare fixture găsit
 	for _, f := range fixtures {
 		log.Printf("Found fixture: ID=%d, League=%s/%s, Teams=%s vs %s",
 			f.ID, f.LeagueName, f.LeagueCountry, f.HomeTeam, f.AwayTeam)

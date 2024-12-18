@@ -35,6 +35,10 @@ func main() {
 			return betHandler.HandlePostBet(e)
 		})
 
+		e.Router.GET("/api/:nftIdentifier", func(e *core.RequestEvent) error {
+			return betHandler.HandleGetBet(e)
+		})
+
 		e.Router.POST("/api/nft/generate", func(e *core.RequestEvent) error {
 			return nftHandler.HandleGenerateNFT(e)
 		})
