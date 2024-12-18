@@ -1,11 +1,13 @@
 package api
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"rockstake-core/db"
 	"rockstake-core/types"
+	"strings"
 
 	"github.com/pocketbase/pocketbase/core"
 )
@@ -52,7 +54,7 @@ func (h *BetHandler) HandlePostBet(e *core.RequestEvent) error {
 		WalletAddress: betRequest.WalletAddress,
 		FixtureID:     betRequest.FixtureID,
 		MarketID:      betRequest.MarketID,
-		Status:        "open",
+		Status:        "Open",
 		BetInfo: types.BetInfo{
 			Selection:    betRequest.Selection,
 			Type:         betRequest.Type,
@@ -78,45 +80,20 @@ func (h *BetHandler) HandlePostBet(e *core.RequestEvent) error {
 }
 
 func (h *BetHandler) HandleGetBet(e *core.RequestEvent) error {
-	var betRequest struct {
-		NftIdentifier string  `json:"nft_identifier"`
-		Collection    string  `json:"collection"`
-		Nonce         int     `json:"nonce"`
-		WalletAddress string  `json:"wallet_address"`
-		FixtureID     int     `json:"fixture_id"`
-		MarketID      int     `json:"market_id"`
-		Selection     string  `json:"selection"`
-		Type          string  `json:"type"`
-		Odd           float64 `json:"odd"`
-		Stake         float64 `json:"stake"`
-		CID           string  `json:"cid"`
-	}
+	parts := strings.Split(e.Request.URL.Path, "/")
+	nftIdentifier := parts[len(parts)-1]
 
-	if err := json.NewDecoder(e.Request.Body).Decode(&betRequest); err != nil {
-		http.Error(e.Response, fmt.Sprintf("Error parsing request: %v", err), http.StatusBadRequest)
+	if nftIdentifier == "" {
+		http.Error(e.Response, "Missing nft_identifier", http.StatusBadRequest)
 		return nil
 	}
 
-	bet := types.Bet{
-		NftIdentifier: betRequest.NftIdentifier,
-		Collection:    betRequest.Collection,
-		Nonce:         betRequest.Nonce,
-		WalletAddress: betRequest.WalletAddress,
-		FixtureID:     betRequest.FixtureID,
-		MarketID:      betRequest.MarketID,
-		Status:        "open",
-		BetInfo: types.BetInfo{
-			Selection:    betRequest.Selection,
-			Type:         betRequest.Type,
-			Odd:          betRequest.Odd,
-			Stake:        betRequest.Stake,
-			PotentialWin: betRequest.Odd * betRequest.Stake,
-			CID:          betRequest.CID,
-		},
-	}
-
-	_, err := h.store.GetBet(e.Request.Context(), bet.NftIdentifier)
+	bet, err := h.store.GetBet(e.Request.Context(), nftIdentifier)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			http.Error(e.Response, "Bet not found", http.StatusNotFound)
+			return nil
+		}
 		http.Error(e.Response, fmt.Sprintf("Error retrieving bet: %v", err), http.StatusInternalServerError)
 		return nil
 	}

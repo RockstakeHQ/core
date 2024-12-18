@@ -35,7 +35,7 @@ func main() {
 			return betHandler.HandlePostBet(e)
 		})
 
-		e.Router.GET("/api/:nftIdentifier", func(e *core.RequestEvent) error {
+		e.Router.GET("/api/bet/{nft_identifier}", func(e *core.RequestEvent) error {
 			return betHandler.HandleGetBet(e)
 		})
 
